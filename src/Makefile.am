@@ -5,6 +5,9 @@ endif
 if BUILD_WITH_OWN_LIBOCONFIG
 SUBDIRS += liboconfig
 endif
+if BUILD_PLUGIN_WRITE_MONGO
+SUBDIRS += libmongo
+endif
 
 if COMPILER_IS_GCC
 AM_CFLAGS = -Wall -Werror
@@ -1231,6 +1234,17 @@ write_redis_la_CFLAGS = $(AM_CFLAGS) $(BUILD_WITH_LIBCREDIS_CPPFLAGS)
 write_redis_la_LIBADD = -lcredis
 collectd_LDADD += "-dlopen" write_redis.la
 collectd_DEPENDENCIES += write_redis.la
+endif
+
+if BUILD_PLUGIN_WRITE_MONGO
+pkglib_LTLIBRARIES += write_mongo.la
+write_mongo_la_SOURCES = write_mongo.c
+write_mongo_la_LDFLAGS = -module -avoid-version
+write_mongo_la_CFLAGS = -DMONGO_HAVE_STDINT $(AM_CFLAGS)
+write_mongo_la_LIBADD = libmongo/libmongo.la
+write_mongo_la_DEPENDENCIES = libmongo/libmongo.la
+collectd_LDADD += "-dlopen" write_mongo.la
+collectd_DEPENDENCIES += write_mongo.la
 endif
 
 if BUILD_PLUGIN_XMMS
